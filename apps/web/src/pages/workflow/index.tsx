@@ -89,7 +89,7 @@ const Workflow = () => {
                     variant="contained"
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<AddIcon />}
-                    // onClick={() => setModalOpen(true)}
+                    onClick={() => navigate('/workflow/editor')}
                 >
                     {getIntlText('common.label.add')}
                 </Button>

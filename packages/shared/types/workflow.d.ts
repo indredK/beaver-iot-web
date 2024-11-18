@@ -1,6 +1,6 @@
 /**
  * 节点类型
- * @param start 开始节点
+ * @param input 输入节点
  * @param end 结束节点
  * @param code 函数节点
  * @param ifelse 条件节点
@@ -12,11 +12,11 @@
  * @param webhook webhook 节点
  */
 declare type WorkflowNodeType =
-    | 'start'
+    | 'input'
     | 'end'
     | 'code'
     | 'ifelse'
-    | 'entity'
+    | 'assigner'
     | 'timer'
     | 'event'
     | 'service'
@@ -24,9 +24,9 @@ declare type WorkflowNodeType =
     | 'webhook';
 
 /**
- * 开始节点参数类型
+ * 输入节点参数类型
  */
-declare type StartNodeArgumentType = {
+declare type InputNodeArgumentType = {
     /** 输入参数 */
     inputs: {
         name: string;
@@ -35,6 +35,9 @@ declare type StartNodeArgumentType = {
     }[];
 };
 
+/**
+ * 结束节点参数类型
+ */
 declare type EndNodeArgumentType = {
     /** 输出参数 */
     outputs: {
@@ -152,11 +155,13 @@ declare type CodeNodeArgumentType = {
  * 赋值节点参数类型
  */
 declare type AssignerNodeArgumentType = {
-    /** 实体 Key */
-    key: ApiKey;
-    /** 数据来源（上级节点的输出参数） */
-    source: ApiKey;
-}[];
+    settings: {
+        /** 实体 Key */
+        key: ApiKey;
+        /** 数据来源（上级节点的输出参数） */
+        source: ApiKey;
+    }[];
+};
 
 /**
  * 服务节点参数类型
@@ -199,6 +204,9 @@ declare type EmailNodeArgumentType = {
     }[];
 };
 
+/**
+ * Webhook 节点参数类型
+ */
 declare type WebhookNodeArgumentType = {
     /** 推送数据（来源于上个节点） */
     data: ApiKey[];
@@ -220,18 +228,7 @@ declare type WebhookNodeArgumentType = {
     }[];
 };
 
-declare type WorkflowNodeGeneralDataType = {
-    name: string;
-    remark: string;
-    arguments?: {
-        key: ApiKey;
-        type?: EntityType;
-        operator?: string;
-        value?: any;
-    }[];
-};
-
-declare type WorkflowNode = {
+declare type WorkflowNodeDataType<T extends WorkflowNodeType, D extends Record<string, any>> = {
     /** 节点 id */
     id: ApiKey;
     /** 节点位置 */
@@ -240,21 +237,30 @@ declare type WorkflowNode = {
         y: number;
     };
     /** 节点类型 */
-    type: WorkflowNodeType;
-    /**
-     * 节点状态
-     * @param active 选中
-     * @param success 成功
-     * @param error 失败
-     * @param running 运行中
-     */
-    state?: 'active' | 'success' | 'error' | 'running';
-    // TODO: data 类型待定
+    type: T;
     /** 节点数据 */
-    data?: unknown;
+    data?: D;
 };
 
-declare type WorkflowEdge = {
+/**
+ * 工作流节点类型
+ */
+declare type WorkflowNodeType =
+    | WorkflowNodeDataType<'input', InputNodeArgumentType>
+    | WorkflowNodeDataType<'end', EndNodeArgumentType>
+    | WorkflowNodeDataType<'code', CodeNodeArgumentType>
+    | WorkflowNodeDataType<'ifelse', IfElseNodeArgumentType>
+    | WorkflowNodeDataType<'assigner', AssignerNodeArgumentType>
+    | WorkflowNodeDataType<'timer', TimerNodeArgumentType>
+    | WorkflowNodeDataType<'event', EventNodeArgumentType>
+    | WorkflowNodeDataType<'service', ServiceNodeArgumentType>
+    | WorkflowNodeDataType<'email', EmailNodeArgumentType>
+    | WorkflowNodeDataType<'webhook', WebhookNodeArgumentType>;
+
+/**
+ * 工作流连线类型
+ */
+declare type WorkflowEdgeType = {
     id: ApiKey;
     source: ApiKey;
     target: ApiKey;
