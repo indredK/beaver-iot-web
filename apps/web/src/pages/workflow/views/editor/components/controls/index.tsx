@@ -1,5 +1,13 @@
 import React from 'react';
 import { Panel, useReactFlow, useViewport } from '@xyflow/react';
+import { Stack, Paper, ButtonGroup, Button } from '@mui/material';
+import {
+    ZoomInIcon,
+    ZoomOutIcon,
+    MyLocationIcon,
+    AddCircleIcon,
+} from '@milesight/shared/src/components';
+import './style.less';
 
 export interface ControlsProps {
     /**
@@ -13,27 +21,40 @@ export interface ControlsProps {
     maxZoom?: number;
 }
 
+/**
+ * 工作流编辑器工具栏
+ */
 const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom }) => {
     const { zoom } = useViewport();
     const { zoomIn, zoomOut, fitView } = useReactFlow();
 
     return (
-        <Panel position="bottom-left">
-            <button type="button" disabled={!!maxZoom && maxZoom === zoom} onClick={() => zoomIn()}>
-                zoomIn
-            </button>
-            <button
-                type="button"
-                disabled={!!minZoom && minZoom === zoom}
-                onClick={() => zoomOut()}
-            >
-                zoomOut
-            </button>
-            <button type="button" onClick={() => fitView()}>
-                fitView
-            </button>
+        <Panel position="bottom-left" className="ms-workflow-controls">
+            <Stack direction="row" spacing={1}>
+                <Paper elevation={6}>
+                    <ButtonGroup variant="text">
+                        <Button disabled={!!minZoom && minZoom === zoom} onClick={() => zoomOut()}>
+                            <ZoomOutIcon sx={{ fontSize: 20 }} />
+                        </Button>
+                        <Button disabled={!!maxZoom && maxZoom === zoom} onClick={() => zoomIn()}>
+                            <ZoomInIcon sx={{ fontSize: 20 }} />
+                        </Button>
+                        <Button onClick={() => fitView()}>
+                            <MyLocationIcon sx={{ fontSize: 20 }} />
+                        </Button>
+                    </ButtonGroup>
+                </Paper>
+                <Paper elevation={6}>
+                    <Button
+                        sx={{ minWidth: 'auto' }}
+                        onClick={() => console.log('popup node menu...')}
+                    >
+                        <AddCircleIcon sx={{ fontSize: 20 }} />
+                    </Button>
+                </Paper>
+            </Stack>
         </Panel>
     );
 };
 
-export default Controls;
+export default React.memo(Controls);

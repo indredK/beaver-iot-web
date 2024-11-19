@@ -10,9 +10,23 @@ import {
 } from '@xyflow/react';
 import { useTheme } from '@milesight/shared/src/hooks';
 import { MIN_ZOOM, MAX_ZOOM } from './constant';
-import { Topbar, Controls, ConfigPanel } from './components';
+import { Topbar, Controls, ConfigPanel, InputNode, EndNode, IfElseNode } from './components';
 
 import '@xyflow/react/dist/style.css';
+import './style.less';
+
+const nodeTypes: Record<WorkflowNodeType, any> = {
+    input: InputNode,
+    end: EndNode,
+    code: () => <>code</>,
+    ifelse: IfElseNode,
+    assigner: () => <>assigner</>,
+    timer: () => <>timer</>,
+    event: () => <>event</>,
+    service: () => <>service</>,
+    email: () => <>email</>,
+    webhook: () => <>webhook</>,
+};
 
 const initialNodes = [
     {
@@ -24,7 +38,8 @@ const initialNodes = [
     {
         id: '2',
         data: { label: 'World' },
-        position: { x: 100, y: 100 },
+        position: { x: 300, y: 100 },
+        type: 'ifelse',
     },
 ];
 
@@ -59,8 +74,10 @@ const WorkflowEditor = () => {
                 <div className="ms-view__inner">
                     <ReactFlow
                         fitView
+                        className="ms-workflow"
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}
+                        nodeTypes={nodeTypes}
                         nodes={nodes}
                         edges={edges}
                         onNodesChange={onNodesChange}

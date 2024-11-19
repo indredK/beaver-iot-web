@@ -1,3 +1,13 @@
 {
-    "workflow.button.label_import_from_dsl": "Import from DSL"
+    "workflow.button.label_import_from_dsl": "Import from DSL",
+    "workflow.label.input_node_name": "Input",
+    "workflow.label.end_node_name": "End",
+    "workflow.label.code_node_name": "Code",
+    "workflow.label.ifelse_node_name": "IF/ELSE",
+    "workflow.label.assigner_node_name": "Entity Assigner",
+    "workflow.label.timer_node_name": "Timer",
+    "workflow.label.event_node_name": "Event Listen",
+    "workflow.label.service_node_name": "Service Invocation",
+    "workflow.label.email_node_name": "Email Notify",
+    "workflow.label.webhook_node_name": "Webhook Push"
 }

@@ -23,10 +23,15 @@ declare type WorkflowNodeType =
     | 'email'
     | 'webhook';
 
+declare type BaseNodeDataType = {
+    /** 节点状态（以 $ 开头的均为前端私有属性） */
+    $status?: 'error' | 'success';
+};
+
 /**
  * 输入节点参数类型
  */
-declare type InputNodeArgumentType = {
+declare type InputNodeDataType = BaseNodeDataType & {
     /** 输入参数 */
     inputs: {
         name: string;
@@ -38,7 +43,7 @@ declare type InputNodeArgumentType = {
 /**
  * 结束节点参数类型
  */
-declare type EndNodeArgumentType = {
+declare type EndNodeDataType = BaseNodeDataType & {
     /** 输出参数 */
     outputs: {
         key: ApiKey;
@@ -50,7 +55,7 @@ declare type EndNodeArgumentType = {
 /**
  * 定时器节点参数类型
  */
-declare type TimerNodeArgumentType = {
+declare type TimerNodeDataType = BaseNodeDataType & {
     /**
      * 执行类型
      * @param ONCE 单次执行
@@ -83,7 +88,7 @@ declare type TimerNodeArgumentType = {
 /**
  * 事件节点参数类型
  */
-declare type EventNodeArgumentType = {
+declare type EventNodeDataType = BaseNodeDataType & {
     /**
      * 监听类型
      * @param change 实体数据变更
@@ -126,7 +131,7 @@ declare type WorkflowLogicConditionType = {
  *
  * 注意：实际节点渲染时需默认增加一个 else 分支
  */
-declare type IfElseNodeArgumentType = {
+declare type IfElseNodeDataType = BaseNodeDataType & {
     /** IF 条件 */
     if: WorkflowLogicConditionType[];
     /** ELSEIF 条件 */
@@ -136,7 +141,7 @@ declare type IfElseNodeArgumentType = {
 /**
  * 代码节点参数类型
  */
-declare type CodeNodeArgumentType = {
+declare type CodeNodeDataType = BaseNodeDataType & {
     /** 输入参数 */
     inputs: {
         name: ApiKey;
@@ -154,7 +159,7 @@ declare type CodeNodeArgumentType = {
 /**
  * 赋值节点参数类型
  */
-declare type AssignerNodeArgumentType = {
+declare type AssignerNodeDataType = BaseNodeDataType & {
     settings: {
         /** 实体 Key */
         key: ApiKey;
@@ -166,7 +171,7 @@ declare type AssignerNodeArgumentType = {
 /**
  * 服务节点参数类型
  */
-declare type ServiceNodeArgumentType = {
+declare type ServiceNodeDataType = BaseNodeDataType & {
     /** 服务 Key */
     key: ApiKey;
     /** 输入参数 */
@@ -187,7 +192,7 @@ declare type ServiceNodeArgumentType = {
 /**
  * 邮件节点参数类型
  */
-declare type EmailNodeArgumentType = {
+declare type EmailNodeDataType = BaseNodeDataType & {
     /** 邮箱类型 */
     type: 'gmail';
     /** 邮箱 API Key */
@@ -207,7 +212,7 @@ declare type EmailNodeArgumentType = {
 /**
  * Webhook 节点参数类型
  */
-declare type WebhookNodeArgumentType = {
+declare type WebhookNodeDataType = BaseNodeDataType & {
     /** 推送数据（来源于上个节点） */
     data: ApiKey[];
     /** 自定义数据 */
@@ -246,16 +251,16 @@ declare type WorkflowNodeDataType<T extends WorkflowNodeType, D extends Record<s
  * 工作流节点类型
  */
 declare type WorkflowNodeType =
-    | WorkflowNodeDataType<'input', InputNodeArgumentType>
-    | WorkflowNodeDataType<'end', EndNodeArgumentType>
-    | WorkflowNodeDataType<'code', CodeNodeArgumentType>
-    | WorkflowNodeDataType<'ifelse', IfElseNodeArgumentType>
-    | WorkflowNodeDataType<'assigner', AssignerNodeArgumentType>
-    | WorkflowNodeDataType<'timer', TimerNodeArgumentType>
-    | WorkflowNodeDataType<'event', EventNodeArgumentType>
-    | WorkflowNodeDataType<'service', ServiceNodeArgumentType>
-    | WorkflowNodeDataType<'email', EmailNodeArgumentType>
-    | WorkflowNodeDataType<'webhook', WebhookNodeArgumentType>;
+    | WorkflowNodeDataType<'input', InputNodeDataType>
+    | WorkflowNodeDataType<'end', EndNodeDataType>
+    | WorkflowNodeDataType<'code', CodeNodeDataType>
+    | WorkflowNodeDataType<'ifelse', IfElseNodeDataType>
+    | WorkflowNodeDataType<'assigner', AssignerNodeDataType>
+    | WorkflowNodeDataType<'timer', TimerNodeDataType>
+    | WorkflowNodeDataType<'event', EventNodeDataType>
+    | WorkflowNodeDataType<'service', ServiceNodeDataType>
+    | WorkflowNodeDataType<'email', EmailNodeDataType>
+    | WorkflowNodeDataType<'webhook', WebhookNodeDataType>;
 
 /**
  * 工作流连线类型

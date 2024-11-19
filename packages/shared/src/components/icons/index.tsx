@@ -72,6 +72,13 @@ export {
     AdsClick as AdsClickIcon,
     Timeline as TimelineIcon,
     SystemUpdateAlt as SystemUpdateAltIcon,
+    Input as InputIcon,
+    ZoomIn as ZoomInIcon,
+    ZoomOut as ZoomOutIcon,
+    MyLocation as MyLocationIcon,
+    AddCircle as AddCircleIcon,
+    Flag as FlagIcon,
+    CallSplit as CallSplitIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

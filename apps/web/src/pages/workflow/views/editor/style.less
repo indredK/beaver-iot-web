@@ -1,0 +1,70 @@
+.@{prefix}-view-wf_editor {
+    .@{prefix}-workflow {
+        // ---------- 通用节点样式 ----------
+        --xy-node-border: none;
+        --xy-node-border-radius: @border-radius-sm;
+        --xy-node-boxshadow-selected: none;
+
+        .react-flow__node {
+            width: 240px;
+            padding: 0;
+
+            &.selectable.selected {
+                .@{prefix}-workflow-node {
+                    box-shadow: 0 0 0 2px var(--border-color-blue);
+                    // border: 2px solid var(--border-color-blue);
+
+                    &.success,
+                    &.error {
+                        border-color: var(--component-background);
+                    }
+                }
+            }
+        }
+
+        &-node {
+            padding: @padding-sm;
+            background-color: var(--component-background);
+            border: 1px solid var(--component-background);
+            border-radius: var(--xy-node-border-radius);
+
+            &.success {
+                border-color: var(--border-color-green);
+            }
+
+            &.error {
+                border-color: var(--border-color-red);
+            }
+        }
+
+        &-node-header {
+            display: flex;
+            align-items: center;
+
+            .@{prefix}-workflow-node-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                margin-right: @margin-sm;
+                color: var(--white);
+                border-radius: @border-radius-sm;
+
+                .@{mui-prefix}SvgIcon-root {
+                    font-size: @font-size-lg;
+                }
+            }
+
+            .@{prefix}-workflow-node-title {
+                .text-size(@font-size-base);
+
+                font-weight: @font-weight-bold;
+            }
+        }
+
+        &-node-body {
+            margin-top: @margin-sm;
+        }
+    }
+}
