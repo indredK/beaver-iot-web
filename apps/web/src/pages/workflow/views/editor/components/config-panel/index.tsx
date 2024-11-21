@@ -20,7 +20,7 @@ const ConfigPanel = () => {
     });
 
     return (
-        <Panel position="top-right">
+        <Panel position="top-right" className="ms-workflow-panel-config">
             <div>配置面板</div>
         </Panel>
     );

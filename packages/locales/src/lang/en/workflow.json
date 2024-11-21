@@ -9,5 +9,6 @@
     "workflow.label.event_node_name": "Event Listen",
     "workflow.label.service_node_name": "Service Invocation",
     "workflow.label.email_node_name": "Email Notify",
-    "workflow.label.webhook_node_name": "Webhook Push"
+    "workflow.label.webhook_node_name": "Webhook Push",
+    "workflow.label.handle_tooltip": "<b>Click</b> to add Node<br /><b>Drag</b> to connect"
 }

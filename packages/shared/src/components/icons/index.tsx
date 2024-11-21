@@ -79,6 +79,11 @@ export {
     AddCircle as AddCircleIcon,
     Flag as FlagIcon,
     CallSplit as CallSplitIcon,
+    SettingsEthernet as SettingsEthernetIcon,
+    RoomService as RoomServiceIcon,
+    Webhook as WebhookIcon,
+    Timer as TimerIcon,
+    Hearing as HearingIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

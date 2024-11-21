@@ -10,22 +10,14 @@ import {
 } from '@xyflow/react';
 import { useTheme } from '@milesight/shared/src/hooks';
 import { MIN_ZOOM, MAX_ZOOM } from './constant';
-import { Topbar, Controls, ConfigPanel, InputNode, EndNode, IfElseNode } from './components';
+import { useNodeTypes } from './hooks';
+import { Topbar, Controls, ConfigPanel, Edge } from './components';
 
 import '@xyflow/react/dist/style.css';
 import './style.less';
 
-const nodeTypes: Record<WorkflowNodeType, any> = {
-    input: InputNode,
-    end: EndNode,
-    code: () => <>code</>,
-    ifelse: IfElseNode,
-    assigner: () => <>assigner</>,
-    timer: () => <>timer</>,
-    event: () => <>event</>,
-    service: () => <>service</>,
-    email: () => <>email</>,
-    webhook: () => <>webhook</>,
+const edgeTypes = {
+    'custom-edge': Edge,
 };
 
 const initialNodes = [
@@ -41,15 +33,25 @@ const initialNodes = [
         position: { x: 300, y: 100 },
         type: 'ifelse',
     },
+    {
+        id: '3',
+        data: { label: 'End ABC' },
+        position: { x: 600, y: 0 },
+        type: 'end',
+    },
 ];
 
-const initialEdges = [{ id: '1-2', source: '1', target: '2' }];
+const initialEdges = [
+    { id: '1-2', source: '1', target: '2', type: 'custom-edge' },
+    { id: '2-3', source: '2', target: '3' },
+];
 
 /**
  * 工作流编辑器
  */
 const WorkflowEditor = () => {
     const { grey } = useTheme();
+    const nodeTypes = useNodeTypes();
     const [nodes, setNodes] = useState<ReactFlowProps['nodes']>(initialNodes);
     const [edges, setEdges] = useState<ReactFlowProps['edges']>(initialEdges);
 
@@ -78,6 +80,7 @@ const WorkflowEditor = () => {
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}
                         nodeTypes={nodeTypes}
+                        edgeTypes={edgeTypes}
                         nodes={nodes}
                         edges={edges}
                         onNodesChange={onNodesChange}

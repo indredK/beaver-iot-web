@@ -1,9 +1,9 @@
 import React from 'react';
-import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
-import cls from 'classnames';
+import { Position, type Node, type NodeProps } from '@xyflow/react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { CallSplitIcon } from '@milesight/shared/src/components';
-import './style.less';
+import Handle from '../handle';
+import NodeContainer from '../node-container';
 
 export type IfElseNode = Node<InputNodeDataType, 'ifelse'>;
 
@@ -15,32 +15,21 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = ({ data }) => {
     console.log(data);
 
     return (
-        <>
-            <Handle type="target" position={Position.Left} />
-            <div
-                className={cls('ms-workflow-node ms-workflow-node-ifelse', {
-                    error: data.$status === 'error',
-                    success: data.$status === 'success',
-                })}
-            >
-                <div className="ms-workflow-node-header">
-                    <span className="ms-workflow-node-icon">
-                        <CallSplitIcon sx={{ fontSize: 16, transform: 'rotate(90deg)' }} />
-                    </span>
-                    <span className="ms-workflow-node-title">
-                        {getIntlText('workflow.label.ifelse_node_name')}
-                    </span>
-                </div>
-                {/* TODO: render conditions detail... */}
-                {/* <div className="ms-workflow-node-body">
-                    <div className="ms-workflow-node-body__item">
-                        <span className="ms-workflow-node-body__label">输入属性 Key</span>
-                        <span className="ms-workflow-node-body__value">输入属性 Value</span>
-                    </div>
-                </div> */}
-            </div>
-            <Handle type="source" position={Position.Right} />
-        </>
+        <NodeContainer
+            type="ifelse"
+            title={getIntlText('workflow.label.ifelse_node_name')}
+            icon={<CallSplitIcon />}
+            iconBgColor="#00ACC1"
+            status={data.$status}
+            handles={[
+                <Handle type="target" position={Position.Left} />,
+                // TODO: 根据条件动态渲染多个操作柄
+                <Handle type="source" position={Position.Right} style={{ top: 20 }} />,
+            ]}
+        >
+            {/* TODO: render conditions detail... */}
+            <span>render conditions...</span>
+        </NodeContainer>
     );
 };
 

@@ -1,22 +1,35 @@
 .@{prefix}-view-wf_editor {
     .@{prefix}-workflow {
-        // ---------- 通用节点样式 ----------
+        // ---------- 节点样式变量覆盖 ----------
         --xy-node-border: none;
         --xy-node-border-radius: @border-radius-sm;
         --xy-node-boxshadow-selected: none;
 
+        // ---------- 连线样式变量覆盖 ----------
+        --xy-edge-stroke: var(--gray-color-4);
+        --xy-edge-stroke-selected: var(--gray-color-5);
+        --xy-edge-stroke-width: 2;
+        --xy-connectionline-stroke-width: 2;
+
+        // ---------- 节点样式 ----------
         .react-flow__node {
             width: 240px;
             padding: 0;
 
-            &.selectable.selected {
-                .@{prefix}-workflow-node {
-                    box-shadow: 0 0 0 2px var(--border-color-blue);
-                    // border: 2px solid var(--border-color-blue);
+            &.selectable {
+                &:hover {
+                    box-shadow: var(--xy-node-boxshadow-hover-default);
+                }
 
-                    &.success,
-                    &.error {
-                        border-color: var(--component-background);
+                &.selected {
+                    .@{prefix}-workflow-node {
+                        box-shadow: 0 0 0 2px var(--border-color-blue);
+                        // border: 2px solid var(--border-color-blue);
+
+                        &.success,
+                        &.error {
+                            border-color: var(--component-background);
+                        }
                     }
                 }
             }
@@ -34,6 +47,12 @@
 
             &.error {
                 border-color: var(--border-color-red);
+            }
+        }
+
+        &-node-ifelse {
+            .@{prefix}-workflow-node-icon .@{mui-prefix}SvgIcon-root {
+                transform: rotate(90deg);
             }
         }
 

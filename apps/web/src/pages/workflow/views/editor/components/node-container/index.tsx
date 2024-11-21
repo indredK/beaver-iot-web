@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import cls from 'classnames';
-import { useI18n } from '@milesight/shared/src/hooks';
 
 export type NodeContainerProps = {
     /**
+     * 节点类型
+     */
+    type: WorkflowNodeType;
+
+    /**
      * 节点 Title 的国际化文案 Key
      */
-    titleIntlKey: string;
+    title: string;
 
     /**
      * 节点 Icon
@@ -25,11 +29,6 @@ export type NodeContainerProps = {
     handles?: React.ReactNode[];
 
     /**
-     * 节点类型
-     */
-    type: WorkflowNodeType;
-
-    /**
      * 节点状态
      */
     status?: BaseNodeDataType['$status'];
@@ -44,7 +43,8 @@ export type NodeContainerProps = {
  * 通用节点容器
  */
 const NodeContainer: React.FC<NodeContainerProps> = ({
-    titleIntlKey,
+    type,
+    title,
     icon,
     iconBgColor,
     handles = [
@@ -54,13 +54,12 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     status,
     children,
 }) => {
-    const { getIntlText } = useI18n();
-
     return (
         <>
-            {handles?.map(handle => handle)}
+            {/* eslint-disable-next-line react/no-array-index-key */}
+            {handles?.map((handle, index) => <Fragment key={index}>{handle}</Fragment>)}
             <div
-                className={cls('ms-workflow-node', {
+                className={cls('ms-workflow-node', `ms-workflow-node-${type}`, {
                     error: status === 'error',
                     success: status === 'success',
                 })}
@@ -72,7 +71,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                     >
                         {icon}
                     </span>
-                    <span className="ms-workflow-node-title">{getIntlText(titleIntlKey)}</span>
+                    <span className="ms-workflow-node-title">{title}</span>
                 </div>
                 {children && <div className="ms-workflow-node-body">{children}</div>}
             </div>
