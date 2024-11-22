@@ -25,9 +25,14 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
             iconBgColor={nodeConfig.iconBgColor}
             nodeProps={props}
             handles={[
-                <Handle type="target" position={Position.Left} />,
+                <Handle type="target" position={Position.Left} nodeProps={props} />,
                 // TODO: 根据条件动态渲染多个操作柄
-                <Handle type="source" position={Position.Right} style={{ top: 20 }} />,
+                <Handle
+                    type="source"
+                    position={Position.Right}
+                    nodeProps={props}
+                    style={{ top: 20 }}
+                />,
             ]}
         >
             {/* TODO: render conditions detail... */}

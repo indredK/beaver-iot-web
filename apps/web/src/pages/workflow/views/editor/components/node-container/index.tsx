@@ -1,8 +1,11 @@
-import React, { useState, Fragment } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import React, { Fragment, useState, useMemo } from 'react';
+import { Position, type NodeProps } from '@xyflow/react';
 import cls from 'classnames';
 import { Menu, MenuItem } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
+import Handle from '../handle';
+import { basicNodeConfigs } from '../../constant';
+import './style.less';
 
 export type NodeContainerProps = {
     /**
@@ -49,11 +52,11 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     title,
     icon,
     iconBgColor,
-    handles = [
-        <Handle type="target" position={Position.Left} />,
-        <Handle type="source" position={Position.Right} />,
-    ],
     nodeProps,
+    handles = [
+        <Handle type="target" position={Position.Left} nodeProps={nodeProps} />,
+        <Handle type="source" position={Position.Right} nodeProps={nodeProps} />,
+    ],
     children,
 }) => {
     const { getIntlText } = useI18n();
@@ -64,7 +67,23 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
         mouseX: number;
         mouseY: number;
     } | null>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
+    const isStartNode = basicNodeConfigs[nodeProps.type as WorkflowNodeType]?.category === 'start';
 
+    /**
+     * 「变更节点」子菜单
+     */
+    const nodeMenus = useMemo(() => {
+        const result = Object.values(basicNodeConfigs).filter(item => {
+            return item.category === 'start' && item.type !== nodeProps.type;
+        });
+
+        return result;
+    }, [nodeProps]);
+
+    /**
+     * 右键菜单点击回调
+     */
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
         setContextMenu(
@@ -77,12 +96,17 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
         );
     };
 
+    /**
+     * 菜单项点击回调
+     */
     const handleMenuItemClick = (
         type: 'change' | 'delete',
         record: NodeProps,
         targetNodeType?: WorkflowNodeType,
     ) => {
         console.log({ type, record, targetNodeType });
+
+        setAnchorEl(null);
         setContextMenu(null);
     };
 
@@ -98,6 +122,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                 onContextMenu={handleContextMenu}
             >
                 <Menu
+                    className="ms-workflow-node-menu"
                     open={contextMenu !== null}
                     onClose={() => setContextMenu(null)}
                     anchorReference="anchorPosition"
@@ -107,12 +132,39 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                             : undefined
                     }
                 >
-                    <MenuItem onClick={() => handleMenuItemClick('change', nodeProps, 'timer')}>
-                        {getIntlText('workflow.context_menu.title_change_node')}
-                    </MenuItem>
+                    {isStartNode && (
+                        <MenuItem
+                            onClick={e => {
+                                setAnchorEl(e.currentTarget);
+                            }}
+                        >
+                            {getIntlText('workflow.context_menu.title_change_node')}
+                        </MenuItem>
+                    )}
                     <MenuItem onClick={() => handleMenuItemClick('delete', nodeProps)}>
                         {getIntlText('common.label.delete')}
                     </MenuItem>
+                </Menu>
+                <Menu
+                    className="ms-workflow-node-contextmenu"
+                    open={!!anchorEl}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    onClose={() => setAnchorEl(null)}
+                >
+                    {nodeMenus.map(menu => (
+                        <MenuItem
+                            onClick={() => handleMenuItemClick('change', nodeProps, menu.type)}
+                        >
+                            <span className="icon" style={{ backgroundColor: menu.iconBgColor }}>
+                                {menu.icon}
+                            </span>
+                            <span className="title">{getIntlText(menu.labelIntlKey)}</span>
+                        </MenuItem>
+                    ))}
                 </Menu>
                 <div className="ms-workflow-node-header">
                     <span

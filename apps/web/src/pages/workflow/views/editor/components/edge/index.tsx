@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from '@xyflow/react';
+import { BaseEdge, EdgeLabelRenderer, getBezierPath, type EdgeProps } from '@xyflow/react';
 import { AddCircleIcon } from '@milesight/shared/src/components';
 import './style.less';
 
@@ -8,6 +8,7 @@ import './style.less';
  */
 const CustomEdge = ({
     id,
+    // data,
     sourceX,
     sourceY,
     targetX,

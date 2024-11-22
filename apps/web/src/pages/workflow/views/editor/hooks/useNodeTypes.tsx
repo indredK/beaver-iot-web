@@ -1,33 +1,8 @@
 import React, { useMemo } from 'react';
-import { Position } from '@xyflow/react';
+import { Position, type NodeProps } from '@xyflow/react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { basicNodeConfigs } from '../constant';
 import { Handle, IfElseNode, NodeContainer } from '../components';
-
-/**
- * 节点组件配置
- */
-const nodeConfigs = Object.values(basicNodeConfigs).map(item => {
-    const result: typeof item & { handles?: React.ReactNode[] } = { ...item };
-
-    switch (result.type) {
-        case 'input':
-        case 'timer':
-        case 'event': {
-            result.handles = [<Handle type="source" position={Position.Right} />];
-            break;
-        }
-        case 'end': {
-            result.handles = [<Handle type="target" position={Position.Left} />];
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-
-    return result;
-});
 
 /**
  * 生成所有节点类型
@@ -36,21 +11,47 @@ const useNodeTypes = () => {
     const { getIntlText } = useI18n();
 
     const nodeTypes = useMemo(() => {
-        const result: Partial<Record<WorkflowNodeType, React.FC<any>>> = {
-            ifelse: IfElseNode,
-        };
+        const result = (Object.keys(basicNodeConfigs) as WorkflowNodeType[]).reduce(
+            (acc, type) => {
+                const config = { ...basicNodeConfigs[type] };
+                const generateHandle = (type: WorkflowNodeType, props: NodeProps) => {
+                    switch (type) {
+                        case 'input':
+                        case 'timer':
+                        case 'event': {
+                            return [
+                                <Handle
+                                    type="source"
+                                    position={Position.Right}
+                                    nodeProps={props}
+                                />,
+                            ];
+                        }
+                        case 'end': {
+                            return [
+                                <Handle type="target" position={Position.Left} nodeProps={props} />,
+                            ];
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                };
 
-        nodeConfigs.forEach(({ labelIntlKey, ...config }) => {
-            result[config.type] =
-                result[config.type] ||
-                (props => (
+                acc[type] = props => (
                     <NodeContainer
                         {...config}
-                        title={getIntlText(labelIntlKey)}
+                        title={getIntlText(config.labelIntlKey)}
+                        handles={generateHandle(type, props)}
                         nodeProps={props}
                     />
-                ));
-        });
+                );
+
+                if (type === 'ifelse') acc[type] = IfElseNode;
+                return acc;
+            },
+            {} as Record<WorkflowNodeType, React.FC<any>>,
+        );
 
         return result;
     }, [getIntlText]);

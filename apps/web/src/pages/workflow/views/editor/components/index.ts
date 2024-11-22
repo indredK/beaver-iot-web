@@ -4,5 +4,5 @@ export { default as ConfigPanel } from './config-panel';
 
 export { default as IfElseNode } from './ifelse-node';
 export { default as NodeContainer, type NodeContainerProps } from './node-container';
-export { default as Handle } from './handle';
+export { default as Handle, type Props as HandleProps } from './handle';
 export { default as Edge } from './edge';
