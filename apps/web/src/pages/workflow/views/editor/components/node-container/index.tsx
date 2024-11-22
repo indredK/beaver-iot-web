@@ -1,6 +1,8 @@
-import React, { Fragment } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import React, { useState, Fragment } from 'react';
+import { Handle, Position, type NodeProps } from '@xyflow/react';
 import cls from 'classnames';
+import { Menu, MenuItem } from '@mui/material';
+import { useI18n } from '@milesight/shared/src/hooks';
 
 export type NodeContainerProps = {
     /**
@@ -29,9 +31,9 @@ export type NodeContainerProps = {
     handles?: React.ReactNode[];
 
     /**
-     * 节点状态
+     * 节点所有属性
      */
-    status?: BaseNodeDataType['$status'];
+    nodeProps: NodeProps;
 
     /**
      * 节点详情内容
@@ -51,9 +53,39 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
         <Handle type="target" position={Position.Left} />,
         <Handle type="source" position={Position.Right} />,
     ],
-    status,
+    nodeProps,
     children,
 }) => {
+    const { getIntlText } = useI18n();
+    const status = nodeProps?.data?.$status;
+
+    // ---------- 右键菜单 ----------
+    const [contextMenu, setContextMenu] = useState<{
+        mouseX: number;
+        mouseY: number;
+    } | null>(null);
+
+    const handleContextMenu = (event: React.MouseEvent) => {
+        event.preventDefault();
+        setContextMenu(
+            contextMenu === null
+                ? {
+                      mouseX: event.clientX + 2,
+                      mouseY: event.clientY - 6,
+                  }
+                : null,
+        );
+    };
+
+    const handleMenuItemClick = (
+        type: 'change' | 'delete',
+        record: NodeProps,
+        targetNodeType?: WorkflowNodeType,
+    ) => {
+        console.log({ type, record, targetNodeType });
+        setContextMenu(null);
+    };
+
     return (
         <>
             {/* eslint-disable-next-line react/no-array-index-key */}
@@ -63,7 +95,25 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                     error: status === 'error',
                     success: status === 'success',
                 })}
+                onContextMenu={handleContextMenu}
             >
+                <Menu
+                    open={contextMenu !== null}
+                    onClose={() => setContextMenu(null)}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        contextMenu !== null
+                            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                            : undefined
+                    }
+                >
+                    <MenuItem onClick={() => handleMenuItemClick('change', nodeProps, 'timer')}>
+                        {getIntlText('workflow.context_menu.title_change_node')}
+                    </MenuItem>
+                    <MenuItem onClick={() => handleMenuItemClick('delete', nodeProps)}>
+                        {getIntlText('common.label.delete')}
+                    </MenuItem>
+                </Menu>
                 <div className="ms-workflow-node-header">
                     <span
                         className="ms-workflow-node-icon"

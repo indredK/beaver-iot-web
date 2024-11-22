@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from '@xyflow/react';
-import { useDebounceFn } from 'ahooks';
 import { AddCircleIcon } from '@milesight/shared/src/components';
 import './style.less';
 

@@ -4,23 +4,26 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { CallSplitIcon } from '@milesight/shared/src/components';
 import Handle from '../handle';
 import NodeContainer from '../node-container';
+import { basicNodeConfigs } from '../../constant';
 
 export type IfElseNode = Node<InputNodeDataType, 'ifelse'>;
+
+const nodeConfig = basicNodeConfigs.ifelse;
 
 /**
  * 输入节点
  */
-const IfElseNode: React.FC<NodeProps<IfElseNode>> = ({ data }) => {
+const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
     const { getIntlText } = useI18n();
-    console.log(data);
+    console.log(props);
 
     return (
         <NodeContainer
             type="ifelse"
-            title={getIntlText('workflow.label.ifelse_node_name')}
+            title={getIntlText(nodeConfig.labelIntlKey)}
             icon={<CallSplitIcon />}
-            iconBgColor="#00ACC1"
-            status={data.$status}
+            iconBgColor={nodeConfig.iconBgColor}
+            nodeProps={props}
             handles={[
                 <Handle type="target" position={Position.Left} />,
                 // TODO: 根据条件动态渲染多个操作柄

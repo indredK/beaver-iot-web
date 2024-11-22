@@ -10,5 +10,6 @@
     "workflow.label.service_node_name": "Service Invocation",
     "workflow.label.email_node_name": "Email Notify",
     "workflow.label.webhook_node_name": "Webhook Push",
-    "workflow.label.handle_tooltip": "<b>Click</b> to add Node<br /><b>Drag</b> to connect"
+    "workflow.label.handle_tooltip": "<b>Click</b> to add Node<br /><b>Drag</b> to connect",
+    "workflow.context_menu.title_change_node": "Change Node"
 }
