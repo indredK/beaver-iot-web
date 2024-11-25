@@ -1,17 +1,19 @@
 import { useState, useCallback } from 'react';
 import {
     ReactFlow,
-    // Controls,
     Background,
     applyEdgeChanges,
     applyNodeChanges,
     addEdge,
     type ReactFlowProps,
+    type Node,
+    type NodeChange,
 } from '@xyflow/react';
 import { useTheme } from '@milesight/shared/src/hooks';
 import { MIN_ZOOM, MAX_ZOOM } from './constant';
 import { useNodeTypes } from './hooks';
-import { Topbar, Controls, ConfigPanel, Edge } from './components';
+import { Topbar, Controls, ConfigPanel, Edge, HelperLines } from './components';
+import { getHelperLines } from './utils';
 
 import '@xyflow/react/dist/style.css';
 import './style.less';
@@ -25,11 +27,11 @@ const initialNodes = [
         id: '1',
         data: { label: 'Hello' },
         position: { x: 0, y: 0 },
-        type: 'input',
+        type: 'trigger',
     },
     {
         id: '2',
-        data: { label: 'World' },
+        data: { label: 'World', $status: 'error' },
         position: { x: 300, y: 100 },
         type: 'ifelse',
     },
@@ -55,8 +57,39 @@ const WorkflowEditor = () => {
     const [nodes, setNodes] = useState<ReactFlowProps['nodes']>(initialNodes);
     const [edges, setEdges] = useState<ReactFlowProps['edges']>(initialEdges);
 
+    const [helperLineHorizontal, setHelperLineHorizontal] = useState<number | undefined>(undefined);
+    const [helperLineVertical, setHelperLineVertical] = useState<number | undefined>(undefined);
+
+    const customApplyNodeChanges = useCallback((changes: NodeChange[], nodes: Node[]): Node[] => {
+        // reset the helper lines (clear existing lines, if any)
+        setHelperLineHorizontal(undefined);
+        setHelperLineVertical(undefined);
+
+        // this will be true if it's a single node being dragged
+        // inside we calculate the helper lines and snap position for the position where the node is being moved to
+        if (
+            changes.length === 1 &&
+            changes[0].type === 'position' &&
+            changes[0].dragging &&
+            changes[0].position
+        ) {
+            const helperLines = getHelperLines(changes[0], nodes);
+
+            // if we have a helper line, we snap the node to the helper line position
+            // this is being done by manipulating the node position inside the change object
+            changes[0].position.x = helperLines.snapPosition.x ?? changes[0].position.x;
+            changes[0].position.y = helperLines.snapPosition.y ?? changes[0].position.y;
+
+            // if helper lines are returned, we set them so that they can be displayed
+            setHelperLineHorizontal(helperLines.horizontal);
+            setHelperLineVertical(helperLines.vertical);
+        }
+
+        return applyNodeChanges(changes, nodes);
+    }, []);
+
     const onNodesChange = useCallback<NonNullable<ReactFlowProps['onNodesChange']>>(
-        changes => setNodes(nds => applyNodeChanges(changes, nds!)),
+        changes => setNodes(nds => customApplyNodeChanges(changes, nds!)),
         [],
     );
     const onEdgesChange = useCallback<NonNullable<ReactFlowProps['onEdgesChange']>>(
@@ -89,6 +122,10 @@ const WorkflowEditor = () => {
                     >
                         <Background style={{ backgroundColor: grey['100'] }} />
                         <Controls minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} />
+                        <HelperLines
+                            horizontal={helperLineHorizontal}
+                            vertical={helperLineVertical}
+                        />
                         <ConfigPanel />
                     </ReactFlow>
                 </div>

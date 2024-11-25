@@ -16,9 +16,9 @@ const useNodeTypes = () => {
                 const config = { ...basicNodeConfigs[type] };
                 const generateHandle = (type: WorkflowNodeType, props: NodeProps) => {
                     switch (type) {
-                        case 'input':
+                        case 'trigger':
                         case 'timer':
-                        case 'event': {
+                        case 'listener': {
                             return [
                                 <Handle
                                     type="source"

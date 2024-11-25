@@ -1,28 +1,31 @@
 /**
  * 节点类型
- * @param input 输入节点
- * @param end 结束节点
- * @param code 函数节点
- * @param ifelse 条件节点
- * @param assigner 赋值节点
+ * @param trigger 触发器节点
  * @param timer 定时节点
- * @param event 事件节点
+ * @param listener 监听器节点
+ * @param ifelse 条件节点
+ * @param end 结束节点
  * @param service 服务节点
+ * @param assigner 赋值节点
+ * @param select 选择节点
  * @param email 邮件节点
  * @param webhook webhook 节点
  */
 declare type WorkflowNodeType =
-    | 'input'
-    | 'end'
-    | 'code'
-    | 'ifelse'
-    | 'assigner'
+    | 'trigger'
     | 'timer'
-    | 'event'
+    | 'listener'
+    | 'ifelse'
+    | 'end'
     | 'service'
+    | 'assigner'
+    | 'select'
     | 'email'
     | 'webhook';
 
+/**
+ * 节点基础数据类型
+ */
 declare type BaseNodeDataType = {
     /** 节点状态（以 $ 开头的均为前端私有属性） */
     $status?: 'error' | 'success';
@@ -31,23 +34,11 @@ declare type BaseNodeDataType = {
 /**
  * 输入节点参数类型
  */
-declare type InputNodeDataType = BaseNodeDataType & {
+declare type TriggerNodeDataType = BaseNodeDataType & {
     /** 输入参数 */
     inputs: {
         name: string;
-        type: EntityValueAttributeType;
-        value: any;
-    }[];
-};
-
-/**
- * 结束节点参数类型
- */
-declare type EndNodeDataType = BaseNodeDataType & {
-    /** 输出参数 */
-    outputs: {
-        key: ApiKey;
-        type: EntityValueAttributeType;
+        type: EntityValueDataType;
         value: any;
     }[];
 };
@@ -88,7 +79,7 @@ declare type TimerNodeDataType = BaseNodeDataType & {
 /**
  * 事件节点参数类型
  */
-declare type EventNodeDataType = BaseNodeDataType & {
+declare type ListenerNodeDataType = BaseNodeDataType & {
     /**
      * 监听类型
      * @param change 实体数据变更
@@ -99,12 +90,12 @@ declare type EventNodeDataType = BaseNodeDataType & {
     /** 监听目标 */
     target: ApiKey;
     /** 输出参数 */
-    outputs?: {
-        key: ApiKey;
-        name: string;
-        type: EntityType;
-        value: any;
-    }[];
+    // outputs?: {
+    //     key: ApiKey;
+    //     name: string;
+    //     type: EntityType;
+    //     value: any;
+    // }[];
 };
 
 declare type WorkflowLogicOperator = 'AND' | 'OR';
@@ -119,41 +110,71 @@ declare type WorkflowFilterOperator =
     | 'IS_EMPTY'
     | 'IS_NOT_EMPTY';
 
-declare type WorkflowLogicConditionType = {
-    key: ApiKey;
-    operator: WorkflowFilterOperator;
-    value?: any;
-    logic?: WorkflowLogicOperator;
-};
-
 /**
  * 条件节点参数类型
  *
  * 注意：实际节点渲染时需默认增加一个 else 分支
  */
 declare type IfElseNodeDataType = BaseNodeDataType & {
-    /** IF 条件 */
-    if: WorkflowLogicConditionType[];
-    /** ELSEIF 条件 */
-    elseif: WorkflowLogicConditionType[][];
+    cases: {
+        conditions: {
+            key: ApiKey;
+            operator: WorkflowFilterOperator;
+            value?: any;
+        }[];
+        logic?: WorkflowLogicOperator;
+    }[];
+};
+
+/**
+ * 结束节点参数类型
+ */
+declare type EndNodeDataType = BaseNodeDataType & {
+    /** 输出参数 */
+    outputs: {
+        key: ApiKey;
+        type: EntityValueDataType;
+        value: any;
+    }[];
 };
 
 /**
  * 代码节点参数类型
  */
-declare type CodeNodeDataType = BaseNodeDataType & {
+// declare type CodeNodeDataType = BaseNodeDataType & {
+//     /** 输入参数 */
+//     inputs: {
+//         name: ApiKey;
+//         value: any;
+//     }[];
+//     /** 输出参数 */
+//     outputs: {
+//         name: ApiKey;
+//         type: EntityValueDataType;
+//     }[];
+//     /** 代码 */
+//     code: string;
+// };
+
+/**
+ * 服务节点参数类型
+ */
+declare type ServiceNodeDataType = BaseNodeDataType & {
+    /** 服务 Key */
+    key: ApiKey;
     /** 输入参数 */
     inputs: {
         name: ApiKey;
+        type: EntityValueDataType;
         value: any;
+        source: ApiKey;
     }[];
     /** 输出参数 */
-    outputs: {
-        name: ApiKey;
-        type: EntityValueDataType;
-    }[];
-    /** 代码 */
-    code: string;
+    // outputs: {
+    //     name: ApiKey;
+    //     type: EntityValueDataType;
+    //     value: any;
+    // }[];
 };
 
 /**
@@ -169,23 +190,19 @@ declare type AssignerNodeDataType = BaseNodeDataType & {
 };
 
 /**
- * 服务节点参数类型
+ * 实体选择节点参数类型
  */
-declare type ServiceNodeDataType = BaseNodeDataType & {
-    /** 服务 Key */
-    key: ApiKey;
-    /** 输入参数 */
-    inputs: {
-        name: ApiKey;
-        type: EntityValueAttributeType;
-        value: any;
-        source: ApiKey;
-    }[];
-    /** 输出参数 */
-    outputs: {
-        name: ApiKey;
-        type: EntityValueAttributeType;
-        value: any;
+declare type SelectNodeDataType = BaseNodeDataType & {
+    settings: {
+        /**
+         * 监听类型
+         * @param change 实体数据变更
+         * @param call 服务调用
+         * @param report 事件上报
+         */
+        type: 'change' | 'call' | 'report';
+        /** 监听目标 */
+        target: ApiKey;
     }[];
 };
 
@@ -202,11 +219,11 @@ declare type EmailNodeDataType = BaseNodeDataType & {
     /** 邮件内容 */
     content: string;
     /** 输出参数 */
-    outputs: {
-        name: ApiKey;
-        type: EntityValueAttributeType;
-        value: any;
-    }[];
+    // outputs: {
+    //     name: ApiKey;
+    //     type: EntityValueDataType;
+    //     value: any;
+    // }[];
 };
 
 /**
@@ -218,7 +235,7 @@ declare type WebhookNodeDataType = BaseNodeDataType & {
     /** 自定义数据 */
     customData: {
         key: ApiKey;
-        type: EntityValueAttributeType;
+        type: EntityValueDataType;
         value: any;
     }[];
     /** Webhook URL */
@@ -228,7 +245,7 @@ declare type WebhookNodeDataType = BaseNodeDataType & {
     /** 输出参数 */
     outputs: {
         name: ApiKey;
-        type: EntityValueAttributeType;
+        type: EntityValueDataType;
         value: any;
     }[];
 };
@@ -251,22 +268,14 @@ declare type WorkflowNodeDataType<T extends WorkflowNodeType, D extends Record<s
  * 工作流节点类型
  */
 declare type WorkflowNodeType =
-    | WorkflowNodeDataType<'input', InputNodeDataType>
-    | WorkflowNodeDataType<'end', EndNodeDataType>
-    | WorkflowNodeDataType<'code', CodeNodeDataType>
-    | WorkflowNodeDataType<'ifelse', IfElseNodeDataType>
-    | WorkflowNodeDataType<'assigner', AssignerNodeDataType>
+    | WorkflowNodeDataType<'trigger', TriggerNodeDataType>
     | WorkflowNodeDataType<'timer', TimerNodeDataType>
-    | WorkflowNodeDataType<'event', EventNodeDataType>
+    | WorkflowNodeDataType<'listener', ListenerNodeDataType>
+    | WorkflowNodeDataType<'ifelse', IfElseNodeDataType>
+    | WorkflowNodeDataType<'end', EndNodeDataType>
+    // | WorkflowNodeDataType<'code', CodeNodeDataType>
     | WorkflowNodeDataType<'service', ServiceNodeDataType>
+    | WorkflowNodeDataType<'assigner', AssignerNodeDataType>
+    | WorkflowNodeDataType<'select', SelectNodeDataType>
     | WorkflowNodeDataType<'email', EmailNodeDataType>
     | WorkflowNodeDataType<'webhook', WebhookNodeDataType>;
-
-/**
- * 工作流连线类型
- */
-declare type WorkflowEdgeType = {
-    id: ApiKey;
-    source: ApiKey;
-    target: ApiKey;
-};

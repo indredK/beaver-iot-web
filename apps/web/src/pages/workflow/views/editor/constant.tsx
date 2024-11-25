@@ -42,80 +42,86 @@ export type NodeConfigItemType = {
     iconBgColor: string;
     /**
      * 节点分类
-     * @param start 开始节点
-     * @param end 结束节点
-     * @param logic 逻辑节点
-     * ...
+     * @param entry 入口节点
+     * @param control 控制节点
+     * @param action 动作节点
+     * @param external 外部节点
      */
-    category?: 'start' | 'end' | 'logic';
+    category?: 'entry' | 'control' | 'action' | 'external';
 };
 
 /**
  * 节点基础配置
  */
 export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
-    input: {
-        type: 'input',
-        labelIntlKey: 'workflow.label.input_node_name',
+    trigger: {
+        type: 'trigger',
+        labelIntlKey: 'workflow.label.trigger_node_name',
         icon: <InputIcon />,
         iconBgColor: '#3491FA',
-        category: 'start',
+        category: 'entry',
     },
     timer: {
         type: 'timer',
         labelIntlKey: 'workflow.label.timer_node_name',
         icon: <TimerIcon />,
         iconBgColor: '#3491FA',
-        category: 'start',
+        category: 'entry',
     },
-    event: {
-        type: 'event',
-        labelIntlKey: 'workflow.label.event_node_name',
+    listener: {
+        type: 'listener',
+        labelIntlKey: 'workflow.label.listener_node_name',
         icon: <HearingIcon />,
         iconBgColor: '#3491FA',
-        category: 'start',
-    },
-    end: {
-        type: 'end',
-        labelIntlKey: 'workflow.label.end_node_name',
-        icon: <InputIcon />,
-        iconBgColor: '#F57C00',
-        category: 'end',
+        category: 'entry',
     },
     ifelse: {
         type: 'ifelse',
         labelIntlKey: 'workflow.label.ifelse_node_name',
         icon: <CallSplitIcon />,
         iconBgColor: '#00ACC1',
+        category: 'control',
     },
-    code: {
-        type: 'code',
-        labelIntlKey: 'workflow.label.code_node_name',
-        icon: <SettingsEthernetIcon />,
-        iconBgColor: '#00ACC1',
+    end: {
+        type: 'end',
+        labelIntlKey: 'workflow.label.end_node_name',
+        icon: <InputIcon />,
+        iconBgColor: '#F57C00',
+        category: 'control',
     },
     assigner: {
         type: 'assigner',
         labelIntlKey: 'workflow.label.assigner_node_name',
         icon: <EntityIcon />,
         iconBgColor: '#00ACC1',
+        category: 'action',
     },
     service: {
         type: 'service',
         labelIntlKey: 'workflow.label.service_node_name',
         icon: <RoomServiceIcon />,
         iconBgColor: '#7E57C2',
+        category: 'action',
+    },
+    select: {
+        type: 'select',
+        labelIntlKey: 'workflow.label.select_node_name',
+        icon: <SettingsEthernetIcon />,
+        iconBgColor: '#00ACC1',
+        category: 'action',
     },
     email: {
         type: 'email',
         labelIntlKey: 'workflow.label.email_node_name',
         icon: <EmailIcon />,
         iconBgColor: '#7E57C2',
+        category: 'external',
     },
     webhook: {
         type: 'webhook',
         labelIntlKey: 'workflow.label.webhook_node_name',
         icon: <WebhookIcon />,
         iconBgColor: '#7E57C2',
+        category: 'external',
     },
 };
