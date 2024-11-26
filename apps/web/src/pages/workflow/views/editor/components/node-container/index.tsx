@@ -68,14 +68,14 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
         mouseY: number;
     } | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
-    const isStartNode = basicNodeConfigs[nodeProps.type as WorkflowNodeType]?.category === 'start';
+    const isEntryNode = basicNodeConfigs[nodeProps.type as WorkflowNodeType]?.category === 'entry';
 
     /**
      * 「变更节点」子菜单
      */
     const nodeMenus = useMemo(() => {
         const result = Object.values(basicNodeConfigs).filter(item => {
-            return item.category === 'start' && item.type !== nodeProps.type;
+            return item.category === 'entry' && item.type !== nodeProps.type;
         });
 
         return result;
@@ -132,7 +132,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                             : undefined
                     }
                 >
-                    {isStartNode && (
+                    {isEntryNode && (
                         <MenuItem
                             onClick={e => {
                                 setAnchorEl(e.currentTarget);
@@ -155,14 +155,15 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                     }}
                     onClose={() => setAnchorEl(null)}
                 >
-                    {nodeMenus.map(menu => (
+                    {nodeMenus.map(node => (
                         <MenuItem
-                            onClick={() => handleMenuItemClick('change', nodeProps, menu.type)}
+                            key={node.type}
+                            onClick={() => handleMenuItemClick('change', nodeProps, node.type)}
                         >
-                            <span className="icon" style={{ backgroundColor: menu.iconBgColor }}>
-                                {menu.icon}
+                            <span className="icon" style={{ backgroundColor: node.iconBgColor }}>
+                                {node.icon}
                             </span>
-                            <span className="title">{getIntlText(menu.labelIntlKey)}</span>
+                            <span className="title">{getIntlText(node.labelIntlKey)}</span>
                         </MenuItem>
                     ))}
                 </Menu>

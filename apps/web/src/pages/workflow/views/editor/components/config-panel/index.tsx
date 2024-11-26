@@ -1,13 +1,20 @@
 import { useState, useCallback, useMemo } from 'react';
 import {
     Panel,
-    useOnSelectionChange,
+    useNodes,
+    useReactFlow,
+    type Node,
     type ReactFlowProps,
     type UseOnSelectionChangeOptions,
 } from '@xyflow/react';
 import cls from 'classnames';
+import { Stack, IconButton } from '@mui/material';
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
+// import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { CloseIcon, PlayArrowIcon } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '../../constant';
+import { useCommonFormItems, type CommonFormDataProps } from './hooks';
 import './style.less';
 
 /**
@@ -15,23 +22,29 @@ import './style.less';
  */
 const ConfigPanel = () => {
     const { getIntlText } = useI18n();
-    const [selectedNodes, setSelectedNodes] = useState<ReactFlowProps['nodes']>([]);
-    const nodeConfig = useMemo(() => {
-        if (!selectedNodes?.length || selectedNodes.length > 1) {
+
+    // ---------- 节点相关逻辑处理 ----------
+    const nodes = useNodes();
+    const reactFlow = useReactFlow();
+    const selectedNode = useMemo(() => {
+        const selectedNodes = nodes.filter(item => item.selected);
+        const node = selectedNodes?.[0];
+
+        if (selectedNodes.length > 1 || !node || !node.selected || node.dragging) {
             return;
         }
 
-        const nodeType = selectedNodes[0].type as WorkflowNodeType;
-        return basicNodeConfigs[nodeType];
-    }, [selectedNodes]);
+        return node;
+    }, [nodes]);
+    const nodeConfig = useMemo(() => {
+        if (!selectedNode) return;
 
-    const onChange = useCallback<UseOnSelectionChangeOptions['onChange']>(({ nodes }) => {
-        setSelectedNodes(nodes);
-    }, []);
+        return basicNodeConfigs[selectedNode.type as WorkflowNodeType];
+    }, [selectedNode]);
 
-    useOnSelectionChange({
-        onChange,
-    });
+    // ---------- 表单相关逻辑处理 ----------
+    const { control, formState, handleSubmit, reset } = useForm<CommonFormDataProps>();
+    const commonFormItems = useCommonFormItems();
 
     return (
         <Panel
@@ -43,10 +56,46 @@ const ConfigPanel = () => {
             {nodeConfig?.labelIntlKey && (
                 <div className="ms-workflow-panel-config">
                     <div className="ms-workflow-panel-config-header">
-                        <span>{getIntlText(nodeConfig.labelIntlKey)}</span>
+                        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                            <span
+                                className="icon"
+                                style={{ backgroundColor: nodeConfig.iconBgColor }}
+                            >
+                                {nodeConfig.icon}
+                            </span>
+                            <span className="title">{getIntlText(nodeConfig.labelIntlKey)}</span>
+                        </Stack>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                            {nodeConfig.enableTest && (
+                                <IconButton
+                                    onClick={() =>
+                                        console.log('execute testing or popup test panel')
+                                    }
+                                >
+                                    <PlayArrowIcon />
+                                </IconButton>
+                            )}
+                            <IconButton
+                                onClick={() => {
+                                    if (!selectedNode) return;
+                                    reactFlow.updateNode(selectedNode.id, {
+                                        selected: false,
+                                    });
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Stack>
                     </div>
                     <div className="ms-workflow-panel-config-body">
-                        <span>Node Body</span>
+                        {commonFormItems.map(props => (
+                            <Controller<CommonFormDataProps>
+                                {...props}
+                                key={props.name}
+                                control={control}
+                            />
+                        ))}
+                        <span>Other Arguments...</span>
                     </div>
                 </div>
             )}

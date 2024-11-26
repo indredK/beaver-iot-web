@@ -5,6 +5,7 @@
  * @param listener 监听器节点
  * @param ifelse 条件节点
  * @param end 结束节点
+ * @param code 代码节点
  * @param service 服务节点
  * @param assigner 赋值节点
  * @param select 选择节点
@@ -17,6 +18,7 @@ declare type WorkflowNodeType =
     | 'listener'
     | 'ifelse'
     | 'end'
+    | 'code'
     | 'service'
     | 'assigner'
     | 'select'
@@ -141,20 +143,20 @@ declare type EndNodeDataType = BaseNodeDataType & {
 /**
  * 代码节点参数类型
  */
-// declare type CodeNodeDataType = BaseNodeDataType & {
-//     /** 输入参数 */
-//     inputs: {
-//         name: ApiKey;
-//         value: any;
-//     }[];
-//     /** 输出参数 */
-//     outputs: {
-//         name: ApiKey;
-//         type: EntityValueDataType;
-//     }[];
-//     /** 代码 */
-//     code: string;
-// };
+declare type CodeNodeDataType = BaseNodeDataType & {
+    /** 输入参数 */
+    inputs: {
+        name: ApiKey;
+        value: any;
+    }[];
+    /** 输出参数 */
+    outputs: {
+        name: ApiKey;
+        type: EntityValueDataType;
+    }[];
+    /** 代码 */
+    code: string;
+};
 
 /**
  * 服务节点参数类型
@@ -273,9 +275,41 @@ declare type WorkflowNodeType =
     | WorkflowNodeDataType<'listener', ListenerNodeDataType>
     | WorkflowNodeDataType<'ifelse', IfElseNodeDataType>
     | WorkflowNodeDataType<'end', EndNodeDataType>
-    // | WorkflowNodeDataType<'code', CodeNodeDataType>
+    | WorkflowNodeDataType<'code', CodeNodeDataType>
     | WorkflowNodeDataType<'service', ServiceNodeDataType>
     | WorkflowNodeDataType<'assigner', AssignerNodeDataType>
     | WorkflowNodeDataType<'select', SelectNodeDataType>
     | WorkflowNodeDataType<'email', EmailNodeDataType>
     | WorkflowNodeDataType<'webhook', WebhookNodeDataType>;
+
+/**
+ * 工作流边类型
+ */
+declare type WorkflowEdgeType = {
+    /** 边 ID */
+    id: ApiKey;
+    /** 起点 Node ID */
+    source: ApiKey;
+    /** 终点 Node ID */
+    target: ApiKey;
+    /** 起点 Handle ID */
+    sourceHandle: ApiKey;
+    /** 终点 Handle ID */
+    targetHandle: ApiKey;
+};
+
+/**
+ * 工作流数据类型
+ */
+declare type WorkflowSchema = {
+    /** 版本号 */
+    version: string;
+    /** 名称 */
+    name: string;
+    /** 描述 */
+    remark?: string;
+    /** 节点 */
+    nodes: WorkflowNodeType[];
+    /** 边 */
+    edges: WorkflowEdgeType[];
+};

@@ -8,6 +8,7 @@ import {
     HearingIcon,
     InputIcon,
     CallSplitIcon,
+    FlagIcon,
 } from '@milesight/shared/src/components';
 
 /**
@@ -48,6 +49,10 @@ export type NodeConfigItemType = {
      * @param external 外部节点
      */
     category?: 'entry' | 'control' | 'action' | 'external';
+    /**
+     * 是否支持独立测试
+     */
+    enableTest?: boolean;
 };
 
 /**
@@ -78,16 +83,25 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
     ifelse: {
         type: 'ifelse',
         labelIntlKey: 'workflow.label.ifelse_node_name',
-        icon: <CallSplitIcon />,
+        icon: <CallSplitIcon sx={{ transform: 'rotate(90deg)' }} />,
         iconBgColor: '#00ACC1',
         category: 'control',
+        enableTest: true,
     },
     end: {
         type: 'end',
         labelIntlKey: 'workflow.label.end_node_name',
-        icon: <InputIcon />,
+        icon: <FlagIcon />,
         iconBgColor: '#F57C00',
         category: 'control',
+    },
+    code: {
+        type: 'code',
+        labelIntlKey: 'workflow.label.code_node_name',
+        icon: <SettingsEthernetIcon />,
+        iconBgColor: '#00ACC1',
+        category: 'action',
+        enableTest: true,
     },
     assigner: {
         type: 'assigner',
@@ -102,13 +116,15 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <RoomServiceIcon />,
         iconBgColor: '#7E57C2',
         category: 'action',
+        enableTest: true,
     },
     select: {
         type: 'select',
         labelIntlKey: 'workflow.label.select_node_name',
-        icon: <SettingsEthernetIcon />,
+        icon: <EntityIcon />,
         iconBgColor: '#00ACC1',
         category: 'action',
+        enableTest: true,
     },
     email: {
         type: 'email',
@@ -116,6 +132,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <EmailIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
+        enableTest: true,
     },
     webhook: {
         type: 'webhook',
@@ -123,5 +140,6 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <WebhookIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
+        enableTest: true,
     },
 };

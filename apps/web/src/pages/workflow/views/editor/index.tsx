@@ -1,10 +1,14 @@
-import { useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import {
     ReactFlow,
     Background,
     applyEdgeChanges,
     applyNodeChanges,
     addEdge,
+    SelectionMode,
+    useReactFlow,
+    getOutgoers,
+    ReactFlowProvider,
     type ReactFlowProps,
     type Node,
     type NodeChange,
@@ -14,6 +18,7 @@ import { MIN_ZOOM, MAX_ZOOM } from './constant';
 import { useNodeTypes } from './hooks';
 import { Topbar, Controls, ConfigPanel, Edge, HelperLines } from './components';
 import { getHelperLines } from './utils';
+import demoData from './demo-data.json';
 
 import '@xyflow/react/dist/style.css';
 import './style.less';
@@ -22,40 +27,14 @@ const edgeTypes = {
     'custom-edge': Edge,
 };
 
-const initialNodes = [
-    {
-        id: '1',
-        data: { label: 'Hello' },
-        position: { x: 0, y: 0 },
-        type: 'trigger',
-    },
-    {
-        id: '2',
-        data: { label: 'World', $status: 'error' },
-        position: { x: 300, y: 100 },
-        type: 'ifelse',
-    },
-    {
-        id: '3',
-        data: { label: 'End ABC' },
-        position: { x: 600, y: 0 },
-        type: 'end',
-    },
-];
-
-const initialEdges = [
-    { id: '1-2', source: '1', target: '2', type: 'custom-edge' },
-    { id: '2-3', source: '2', target: '3', type: 'custom-edge' },
-];
-
 /**
  * 工作流编辑器
  */
 const WorkflowEditor = () => {
     const { grey } = useTheme();
     const nodeTypes = useNodeTypes();
-    const [nodes, setNodes] = useState<ReactFlowProps['nodes']>(initialNodes);
-    const [edges, setEdges] = useState<ReactFlowProps['edges']>(initialEdges);
+    const [nodes, setNodes] = useState<ReactFlowProps['nodes']>(demoData.nodes);
+    const [edges, setEdges] = useState<ReactFlowProps['edges']>(demoData.edges);
 
     const [helperLineHorizontal, setHelperLineHorizontal] = useState<number | undefined>(undefined);
     const [helperLineVertical, setHelperLineVertical] = useState<number | undefined>(undefined);
@@ -102,6 +81,31 @@ const WorkflowEditor = () => {
         [],
     );
 
+    const { getNodes, getEdges } = useReactFlow();
+    const isValidConnection = useCallback<NonNullable<ReactFlowProps['isValidConnection']>>(
+        connection => {
+            // we are using getNodes and getEdges helpers here
+            // to make sure we create isValidConnection function only once
+            const nodes = getNodes();
+            const edges = getEdges();
+            const target = nodes.find(node => node.id === connection.target);
+            const hasCycle = (node: Node, visited = new Set()) => {
+                if (visited.has(node.id)) return false;
+
+                visited.add(node.id);
+
+                for (const outgoer of getOutgoers(node, nodes, edges)) {
+                    if (outgoer.id === connection.source) return true;
+                    if (hasCycle(outgoer, visited)) return true;
+                }
+            };
+
+            if (target?.id === connection.source) return false;
+            return !hasCycle(target!);
+        },
+        [getNodes, getEdges],
+    );
+
     return (
         <div className="ms-main">
             <Topbar />
@@ -112,6 +116,10 @@ const WorkflowEditor = () => {
                         className="ms-workflow"
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}
+                        selectionOnDrag={false}
+                        selectNodesOnDrag={false}
+                        selectionMode={SelectionMode.Partial}
+                        isValidConnection={isValidConnection}
                         nodeTypes={nodeTypes}
                         edgeTypes={edgeTypes}
                         nodes={nodes}
@@ -134,4 +142,8 @@ const WorkflowEditor = () => {
     );
 };
 
-export default WorkflowEditor;
+export default memo(() => (
+    <ReactFlowProvider>
+        <WorkflowEditor />
+    </ReactFlowProvider>
+));

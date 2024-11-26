@@ -1,12 +1,11 @@
 import React from 'react';
 import { Position, type Node, type NodeProps } from '@xyflow/react';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { CallSplitIcon } from '@milesight/shared/src/components';
 import Handle from '../handle';
 import NodeContainer from '../node-container';
 import { basicNodeConfigs } from '../../constant';
 
-export type IfElseNode = Node<InputNodeDataType, 'ifelse'>;
+export type IfElseNode = Node<IfElseNodeDataType, 'ifelse'>;
 
 const nodeConfig = basicNodeConfigs.ifelse;
 
@@ -21,22 +20,37 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
         <NodeContainer
             type="ifelse"
             title={getIntlText(nodeConfig.labelIntlKey)}
-            icon={<CallSplitIcon />}
+            icon={nodeConfig.icon}
             iconBgColor={nodeConfig.iconBgColor}
             nodeProps={props}
             handles={[
                 <Handle type="target" position={Position.Left} nodeProps={props} />,
                 // TODO: 根据条件动态渲染多个操作柄
                 <Handle
+                    id="case-1"
                     type="source"
                     position={Position.Right}
                     nodeProps={props}
                     style={{ top: 20 }}
                 />,
+                <Handle
+                    id="case-2"
+                    type="source"
+                    position={Position.Right}
+                    nodeProps={props}
+                    style={{ top: 40 }}
+                />,
+                <Handle
+                    id="case-else"
+                    type="source"
+                    position={Position.Right}
+                    nodeProps={props}
+                    style={{ top: 60 }}
+                />,
             ]}
         >
             {/* TODO: render conditions detail... */}
-            <span>render conditions...</span>
+            <span>render cases...</span>
         </NodeContainer>
     );
 };
