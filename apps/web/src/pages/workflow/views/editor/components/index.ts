@@ -6,4 +6,5 @@ export { default as IfElseNode } from './ifelse-node';
 export { default as NodeContainer, type NodeContainerProps } from './node-container';
 export { default as Handle, type Props as HandleProps } from './handle';
 export { default as Edge } from './edge';
-export { default as HelperLines } from './helper-lines';
+export { default as HelperLines, getHelperLines } from './helper-lines';
+export { default as NodeMenu } from './node-menu';

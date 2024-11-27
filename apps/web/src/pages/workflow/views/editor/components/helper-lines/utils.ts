@@ -6,8 +6,9 @@ type GetHelperLinesResult = {
     snapPosition: Partial<XYPosition>;
 };
 
-// this utility function can be called with a position change (inside onNodesChange)
-// it checks all other nodes and calculated the helper line positions and the position where the current node should snap to
+/**
+ * 根据当前节点及周围节点位置计算辅助线位置
+ */
 export function getHelperLines(
     change: NodePositionChange,
     nodes: Node[],

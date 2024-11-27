@@ -1,4 +1,17 @@
 /**
+ * ReactFlow 节点类型
+ */
+declare type ReactFlowNode<
+    D extends Record<string, unknown> = Record<string, unknown>,
+    T extends string = string,
+> = import('@xyflow/react').Node<D, T>;
+
+declare type ReactFlowEdge<
+    D extends Record<string, unknown> = Record<string, unknown>,
+    T extends string = string,
+> = import('@xyflow/react').Edge<D, T>;
+
+/**
  * 节点类型
  * @param trigger 触发器节点
  * @param timer 定时节点
@@ -6,9 +19,9 @@
  * @param ifelse 条件节点
  * @param end 结束节点
  * @param code 代码节点
- * @param service 服务节点
- * @param assigner 赋值节点
- * @param select 选择节点
+ * @param service 实体服务调用节点
+ * @param assigner 实体赋值节点
+ * @param select 实体选择节点
  * @param email 邮件节点
  * @param webhook webhook 节点
  */
@@ -26,29 +39,45 @@ declare type WorkflowNodeType =
     | 'webhook';
 
 /**
- * 节点基础数据类型
+ * 边类型
+ * @param addable 可添加节点的边
  */
-declare type BaseNodeDataType = {
-    /** 节点状态（以 $ 开头的均为前端私有属性） */
-    $status?: 'error' | 'success';
+declare type WorkflowEdgeType = 'addable';
+
+/**
+ * 节点基础数据类型（以 $ 开头的均为前端私有属性）
+ */
+declare type BaseNodeDataType<T extends Record<string, any>> = {
+    /** 名称 */
+    name: string;
+    /** 描述 */
+    remark?: string;
+    /** 后端组件 ID */
+    componentId?: string;
+    /** 状态 */
+    $status?: 'error' | 'success' | 'loading';
+    /** 错误信息 */
+    $errMsg?: React.ReactNode;
+    /** 流程参数 */
+    parameters?: T;
 };
 
 /**
- * 输入节点参数类型
+ * 触发器节点参数类型
  */
-declare type TriggerNodeDataType = BaseNodeDataType & {
+declare type TriggerNodeDataType = BaseNodeDataType<{
     /** 输入参数 */
-    inputs: {
+    entityConfigs: {
         name: string;
         type: EntityValueDataType;
         value: any;
     }[];
-};
+}>;
 
 /**
  * 定时器节点参数类型
  */
-declare type TimerNodeDataType = BaseNodeDataType & {
+declare type TimerNodeDataType = BaseNodeDataType<{
     /**
      * 执行类型
      * @param ONCE 单次执行
@@ -76,12 +105,12 @@ declare type TimerNodeDataType = BaseNodeDataType & {
          */
         time: number;
     }[];
-};
+}>;
 
 /**
- * 事件节点参数类型
+ * 事件监听节点参数类型
  */
-declare type ListenerNodeDataType = BaseNodeDataType & {
+declare type ListenerNodeDataType = BaseNodeDataType<{
     /**
      * 监听类型
      * @param change 实体数据变更
@@ -98,7 +127,7 @@ declare type ListenerNodeDataType = BaseNodeDataType & {
     //     type: EntityType;
     //     value: any;
     // }[];
-};
+}>;
 
 declare type WorkflowLogicOperator = 'AND' | 'OR';
 
@@ -117,84 +146,90 @@ declare type WorkflowFilterOperator =
  *
  * 注意：实际节点渲染时需默认增加一个 else 分支
  */
-declare type IfElseNodeDataType = BaseNodeDataType & {
-    cases: {
-        conditions: {
-            key: ApiKey;
-            operator: WorkflowFilterOperator;
-            value?: any;
+declare type IfElseNodeDataType = BaseNodeDataType<{
+    when: {
+        id: ApiKey;
+        [logic: WorkflowLogicOperator]: {
+            /**
+             * 表达式类型（默认 `condition`，且当前仅支持 `condition`）
+             * @param mvel mvel 表达式
+             * @param condition 条件表达式
+             */
+            expressionType: 'mvel' | 'condition';
+            /** 表达式值 */
+            expressionValue: {
+                id: ApiKey;
+                key: ApiKey;
+                operator: WorkflowFilterOperator;
+                value?: string;
+            };
         }[];
-        logic?: WorkflowLogicOperator;
     }[];
-};
+    otherwise: {
+        id: ApiKey;
+    };
+}>;
 
 /**
  * 结束节点参数类型
  */
-declare type EndNodeDataType = BaseNodeDataType & {
+declare type EndNodeDataType = BaseNodeDataType<{
     /** 输出参数 */
     outputs: {
         key: ApiKey;
         type: EntityValueDataType;
         value: any;
     }[];
-};
+}>;
 
 /**
  * 代码节点参数类型
  */
-declare type CodeNodeDataType = BaseNodeDataType & {
+declare type CodeNodeDataType = BaseNodeDataType<{
+    /** 代码语言 */
+    language: string;
+    /** 代码内容 */
+    expression: string;
     /** 输入参数 */
-    inputs: {
-        name: ApiKey;
-        value: any;
-    }[];
+    inputArguments: Record<ApiKey, string>;
     /** 输出参数 */
-    outputs: {
+    outputArguments: {
         name: ApiKey;
         type: EntityValueDataType;
     }[];
-    /** 代码 */
-    code: string;
-};
+}>;
 
 /**
  * 服务节点参数类型
  */
-declare type ServiceNodeDataType = BaseNodeDataType & {
-    /** 服务 Key */
-    key: ApiKey;
-    /** 输入参数 */
-    inputs: {
-        name: ApiKey;
-        type: EntityValueDataType;
-        value: any;
-        source: ApiKey;
-    }[];
-    /** 输出参数 */
-    // outputs: {
+declare type ServiceNodeDataType = BaseNodeDataType<{
+    /** 服务实体 Key */
+    serviceEntity: ApiKey;
+    /**
+     * 输入参数
+     *
+     * TODO: 该参数后端设计与需求输入限制表不符，待确认
+     */
+    serviceParams: Record<ApiKey, string>;
+    // inputs: {
     //     name: ApiKey;
     //     type: EntityValueDataType;
     //     value: any;
+    //     source: ApiKey;
     // }[];
-};
+}>;
 
 /**
  * 赋值节点参数类型
  */
-declare type AssignerNodeDataType = BaseNodeDataType & {
-    settings: {
-        /** 实体 Key */
-        key: ApiKey;
-        /** 数据来源（上级节点的输出参数） */
-        source: ApiKey;
-    }[];
-};
+declare type AssignerNodeDataType = BaseNodeDataType<{
+    exchangePayload: Record<ApiKey, string>;
+}>;
 
 /**
  * 实体选择节点参数类型
  */
-declare type SelectNodeDataType = BaseNodeDataType & {
+declare type SelectNodeDataType = BaseNodeDataType<{
     settings: {
         /**
          * 监听类型
@@ -206,7 +241,7 @@ declare type SelectNodeDataType = BaseNodeDataType & {
         /** 监听目标 */
         target: ApiKey;
     }[];
-};
+}>;
 
 /**
  * 邮件节点参数类型
@@ -269,34 +304,29 @@ declare type WorkflowNodeDataType<T extends WorkflowNodeType, D extends Record<s
 /**
  * 工作流节点类型
  */
-declare type WorkflowNodeType =
-    | WorkflowNodeDataType<'trigger', TriggerNodeDataType>
-    | WorkflowNodeDataType<'timer', TimerNodeDataType>
-    | WorkflowNodeDataType<'listener', ListenerNodeDataType>
-    | WorkflowNodeDataType<'ifelse', IfElseNodeDataType>
-    | WorkflowNodeDataType<'end', EndNodeDataType>
-    | WorkflowNodeDataType<'code', CodeNodeDataType>
-    | WorkflowNodeDataType<'service', ServiceNodeDataType>
-    | WorkflowNodeDataType<'assigner', AssignerNodeDataType>
-    | WorkflowNodeDataType<'select', SelectNodeDataType>
-    | WorkflowNodeDataType<'email', EmailNodeDataType>
-    | WorkflowNodeDataType<'webhook', WebhookNodeDataType>;
+declare type WorkflowNode =
+    | ReactFlowNode<TriggerNodeDataType, 'trigger'>
+    | ReactFlowNode<TimerNodeDataType, 'timer'>
+    | ReactFlowNode<ListenerNodeDataType, 'listener'>
+    | ReactFlowNode<IfElseNodeDataType, 'ifelse'>
+    | ReactFlowNode<EndNodeDataType, 'end'>
+    | ReactFlowNode<CodeNodeDataType, 'code'>
+    | ReactFlowNode<ServiceNodeDataType, 'service'>
+    | ReactFlowNode<AssignerNodeDataType, 'assigner'>
+    | ReactFlowNode<SelectNodeDataType, 'select'>
+    | ReactFlowNode<EmailNodeDataType, 'email'>
+    | ReactFlowNode<WebhookNodeDataType, 'webhook'>;
 
 /**
  * 工作流边类型
  */
-declare type WorkflowEdgeType = {
-    /** 边 ID */
-    id: ApiKey;
-    /** 起点 Node ID */
-    source: ApiKey;
-    /** 终点 Node ID */
-    target: ApiKey;
-    /** 起点 Handle ID */
-    sourceHandle: ApiKey;
-    /** 终点 Handle ID */
-    targetHandle: ApiKey;
-};
+declare type WorkflowEdge = ReactFlowEdge<
+    {
+        /** 标识鼠标是否 hover */
+        $hovering?: boolean;
+    },
+    WorkflowEdgeType
+>;
 
 /**
  * 工作流数据类型
@@ -309,7 +339,7 @@ declare type WorkflowSchema = {
     /** 描述 */
     remark?: string;
     /** 节点 */
-    nodes: WorkflowNodeType[];
+    nodes: WorkflowNode[];
     /** 边 */
-    edges: WorkflowEdgeType[];
+    edges: WorkflowEdge[];
 };

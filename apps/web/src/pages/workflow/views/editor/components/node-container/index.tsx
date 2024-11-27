@@ -71,7 +71,9 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     const isEntryNode = basicNodeConfigs[nodeProps.type as WorkflowNodeType]?.category === 'entry';
 
     /**
-     * 「变更节点」子菜单
+     * 「变更节点」子菜单项集合
+     *
+     * TODO: 入口节点只可变更为其他入口接口，不可删除？
      */
     const nodeMenus = useMemo(() => {
         const result = Object.values(basicNodeConfigs).filter(item => {

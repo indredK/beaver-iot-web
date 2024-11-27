@@ -1,6 +1,8 @@
 import { CSSProperties, useEffect, useRef } from 'react';
 import { ReactFlowState, useStore } from '@xyflow/react';
 
+export * from './utils';
+
 const canvasStyle: CSSProperties = {
     width: '100%',
     height: '100%',
@@ -20,9 +22,10 @@ export type HelperLinesProps = {
     vertical?: number;
 };
 
-// a simple component to display the helper lines
-// it puts a canvas on top of the React Flow pane and draws the lines using the canvas API
-function HelperLinesRenderer({ horizontal, vertical }: HelperLinesProps) {
+/**
+ * 辅助线渲染器
+ */
+const HelperLinesRenderer = ({ horizontal, vertical }: HelperLinesProps) => {
     const { width, height, transform } = useStore(storeSelector);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -57,6 +60,6 @@ function HelperLinesRenderer({ horizontal, vertical }: HelperLinesProps) {
     }, [width, height, transform, horizontal, vertical]);
 
     return <canvas ref={canvasRef} className="react-flow__canvas" style={canvasStyle} />;
-}
+};
 
 export default HelperLinesRenderer;

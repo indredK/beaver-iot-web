@@ -7,6 +7,7 @@ import {
     MyLocationIcon,
     AddCircleIcon,
 } from '@milesight/shared/src/components';
+import NodeMenu from '../node-menu';
 import './style.less';
 
 export interface ControlsProps {
@@ -45,12 +46,14 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom }) => {
                     </ButtonGroup>
                 </Paper>
                 <Paper elevation={6}>
-                    <Button
-                        sx={{ minWidth: 'auto' }}
-                        onClick={() => console.log('popup node menu...')}
-                    >
-                        <AddCircleIcon sx={{ fontSize: 20 }} />
-                    </Button>
+                    <NodeMenu>
+                        <Button
+                            sx={{ minWidth: 'auto' }}
+                            onClick={() => console.log('popup node menu...')}
+                        >
+                            <AddCircleIcon sx={{ fontSize: 20 }} />
+                        </Button>
+                    </NodeMenu>
                 </Paper>
             </Stack>
         </Panel>

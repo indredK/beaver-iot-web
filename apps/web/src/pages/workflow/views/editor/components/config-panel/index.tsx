@@ -25,7 +25,7 @@ const ConfigPanel = () => {
 
     // ---------- 节点相关逻辑处理 ----------
     const nodes = useNodes();
-    const reactFlow = useReactFlow();
+    const { updateNode } = useReactFlow();
     const selectedNode = useMemo(() => {
         const selectedNodes = nodes.filter(item => item.selected);
         const node = selectedNodes?.[0];
@@ -78,7 +78,7 @@ const ConfigPanel = () => {
                             <IconButton
                                 onClick={() => {
                                     if (!selectedNode) return;
-                                    reactFlow.updateNode(selectedNode.id, {
+                                    updateNode(selectedNode.id, {
                                         selected: false,
                                     });
                                 }}
