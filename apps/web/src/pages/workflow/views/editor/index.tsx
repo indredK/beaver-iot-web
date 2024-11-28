@@ -122,12 +122,26 @@ const WorkflowEditor = () => {
                         maxZoom={MAX_ZOOM}
                         selectionOnDrag={false}
                         selectNodesOnDrag={false}
+                        selectionKeyCode={null}
+                        multiSelectionKeyCode={null}
                         selectionMode={SelectionMode.Partial}
                         isValidConnection={isValidConnection}
                         nodeTypes={nodeTypes}
                         edgeTypes={edgeTypes}
                         nodes={nodes}
                         edges={edges}
+                        // TODO: 优化，抽离到 useNodeInteractions 中
+                        onBeforeDelete={async ({ nodes }) => {
+                            const hasEntryNode = nodes.some(
+                                node =>
+                                    node.type === 'trigger' ||
+                                    node.type === 'timer' ||
+                                    node.type === 'listener',
+                            );
+
+                            if (hasEntryNode) return false;
+                            return true;
+                        }}
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}

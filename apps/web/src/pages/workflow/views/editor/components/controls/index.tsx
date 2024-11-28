@@ -30,9 +30,9 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom }) => {
     const { zoomIn, zoomOut, fitView } = useReactFlow();
 
     return (
-        <Panel position="bottom-left" className="ms-workflow-controls">
+        <Panel position="bottom-left" className="ms-workflow-controls-root">
             <Stack direction="row" spacing={1}>
-                <Paper elevation={6}>
+                <Paper elevation={0}>
                     <ButtonGroup variant="text">
                         <Button disabled={!!minZoom && minZoom === zoom} onClick={() => zoomOut()}>
                             <ZoomOutIcon sx={{ fontSize: 20 }} />
@@ -45,8 +45,17 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom }) => {
                         </Button>
                     </ButtonGroup>
                 </Paper>
-                <Paper elevation={6}>
-                    <NodeMenu>
+                <Paper elevation={0}>
+                    <NodeMenu
+                        anchorOrigin={{
+                            vertical: -10,
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                    >
                         <Button
                             sx={{ minWidth: 'auto' }}
                             onClick={() => console.log('popup node menu...')}

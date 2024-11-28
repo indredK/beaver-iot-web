@@ -57,6 +57,19 @@
         }
     }
 
+    .react-flow__node {
+        .@{prefix}-workflow-handle.is-menu-open {
+            width: 16px;
+            background-color: var(--component-background);
+            border-radius: 16px;
+            cursor: pointer;
+
+            .@{mui-prefix}SvgIcon-root {
+                display: block;
+            }
+        }
+    }
+
     .react-flow__node:hover,
     .react-flow__node.selected {
         .@{prefix}-workflow-handle.source,

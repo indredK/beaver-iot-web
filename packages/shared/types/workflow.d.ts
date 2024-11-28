@@ -11,6 +11,8 @@ declare type ReactFlowEdge<
     T extends string = string,
 > = import('@xyflow/react').Edge<D, T>;
 
+declare type ReactFlowViewport = import('@xyflow/react').Viewport;
+
 /**
  * 节点类型
  * @param trigger 触发器节点
@@ -43,6 +45,15 @@ declare type WorkflowNodeType =
  * @param addable 可添加节点的边
  */
 declare type WorkflowEdgeType = 'addable';
+
+/**
+ * 节点分类
+ * @param entry 入口节点
+ * @param control 控制节点
+ * @param action 动作节点
+ * @param external 外部节点
+ */
+declare type WorkflowNodeCategoryType = 'entry' | 'control' | 'action' | 'external';
 
 /**
  * 节点基础数据类型（以 $ 开头的均为前端私有属性）
@@ -342,4 +353,6 @@ declare type WorkflowSchema = {
     nodes: WorkflowNode[];
     /** 边 */
     edges: WorkflowEdge[];
+    /** 视口 */
+    viewport: ReactFlowViewport;
 };

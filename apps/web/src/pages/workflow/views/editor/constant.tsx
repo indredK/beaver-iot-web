@@ -21,6 +21,29 @@ export const MIN_ZOOM = 0.25;
  */
 export const MAX_ZOOM = 2;
 
+type NodeCategoryConfigItemType = {
+    /** 节点分类国际化文案 Key */
+    labelIntlKey: string;
+};
+
+/**
+ * 节点分类配置
+ */
+export const nodeCategoryConfigs: Record<WorkflowNodeCategoryType, NodeCategoryConfigItemType> = {
+    entry: {
+        labelIntlKey: 'workflow.label.node_category_entry',
+    },
+    control: {
+        labelIntlKey: 'workflow.label.node_category_control',
+    },
+    action: {
+        labelIntlKey: 'workflow.label.node_category_action',
+    },
+    external: {
+        labelIntlKey: 'workflow.label.node_category_external',
+    },
+};
+
 /**
  * 节点配置项类型
  */
@@ -43,12 +66,8 @@ export type NodeConfigItemType = {
     iconBgColor: string;
     /**
      * 节点分类
-     * @param entry 入口节点
-     * @param control 控制节点
-     * @param action 动作节点
-     * @param external 外部节点
      */
-    category?: 'entry' | 'control' | 'action' | 'external';
+    category: WorkflowNodeCategoryType;
     /**
      * 是否支持独立测试
      */

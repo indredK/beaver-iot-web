@@ -14,7 +14,7 @@ const useNodeTypes = () => {
         const result = (Object.keys(basicNodeConfigs) as WorkflowNodeType[]).reduce(
             (acc, type) => {
                 const config = { ...basicNodeConfigs[type] };
-                const generateHandle = (type: WorkflowNodeType, props: NodeProps) => {
+                const generateHandle = (type: WorkflowNodeType, props: NodeProps<WorkflowNode>) => {
                     switch (type) {
                         case 'trigger':
                         case 'timer':

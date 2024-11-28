@@ -36,7 +36,7 @@ export type NodeContainerProps = {
     /**
      * 节点所有属性
      */
-    nodeProps: NodeProps;
+    nodeProps: NodeProps<WorkflowNode>;
 
     /**
      * 节点详情内容

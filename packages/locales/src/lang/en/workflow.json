@@ -7,9 +7,14 @@
     "workflow.label.assigner_node_name": "Entity Assigner",
     "workflow.label.timer_node_name": "Timer",
     "workflow.label.listener_node_name": "Entity Listener",
+    "workflow.label.code_node_name": "Code",
     "workflow.label.service_node_name": "Service Invocation",
     "workflow.label.email_node_name": "Email Notify",
     "workflow.label.webhook_node_name": "Webhook Push",
     "workflow.label.handle_tooltip": "<b>Click</b> to add Node<br /><b>Drag</b> to connect",
-    "workflow.context_menu.title_change_node": "Change Node"
+    "workflow.context_menu.title_change_node": "Change Node",
+    "workflow.label.node_category_entry": "Entry",
+    "workflow.label.node_category_control": "Control",
+    "workflow.label.node_category_action": "Action",
+    "workflow.label.node_category_external": "External"
 }

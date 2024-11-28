@@ -1,14 +1,20 @@
 import React, { useCallback } from 'react';
-import { BaseEdge, EdgeLabelRenderer, getBezierPath, type EdgeProps } from '@xyflow/react';
-import { AddCircleIcon } from '@milesight/shared/src/components';
+import {
+    BaseEdge,
+    EdgeLabelRenderer,
+    getBezierPath,
+    useEdges,
+    type EdgeProps,
+} from '@xyflow/react';
+import NodeMenu from '../node-menu';
 import './style.less';
 
 /**
  * 自定义连线组件
  */
-const CustomEdge = ({
+const AddableEdge = ({
     id,
-    // data,
+    data,
     sourceX,
     sourceY,
     targetX,
@@ -18,7 +24,9 @@ const CustomEdge = ({
     selected,
     style = {},
     markerEnd,
-}: EdgeProps) => {
+}: EdgeProps<WorkflowEdge>) => {
+    const edges = useEdges<WorkflowEdge>();
+    const edge = edges.find(edge => edge.id === id);
     const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,
         sourceY,
@@ -28,27 +36,18 @@ const CustomEdge = ({
         targetPosition,
     });
 
-    // const onEdgeClick = () => {
-    //     console.log(`Edge with id: ${id} has been clicked!`);
-    // };
-    const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.stopPropagation();
-        console.log('popup the nodes menu...');
-    }, []);
-
     return (
         <>
             <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
-            {selected && (
+            {(selected || data?.$hovering) && (
                 <EdgeLabelRenderer>
                     <div
                         className="ms-workflow-edge-label"
                         style={{
                             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
                         }}
-                        onClick={handleClick}
                     >
-                        <AddCircleIcon />
+                        <NodeMenu edge={edge} />
                     </div>
                 </EdgeLabelRenderer>
             )}
@@ -56,4 +55,4 @@ const CustomEdge = ({
     );
 };
 
-export default React.memo(CustomEdge);
+export default React.memo(AddableEdge);
