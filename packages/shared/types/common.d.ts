@@ -107,14 +107,12 @@ declare type ConvertKeysToCamelCase<T> = {
 };
 
 /**
- * 将字符串类型从下划线/中划线命名转换为驼峰命名
+ * 将字符串类型从下划线命名转换为驼峰命名
  */
 declare type ToCamelCase<S extends string | number | symbol> = S extends string
     ? S extends `${infer Head}_${infer Tail}`
         ? `${ToCamelCase<Uncapitalize<Head>>}${Capitalize<ToCamelCase<Tail>>}`
-        : S extends `${infer Head}-${infer Tail}`
-          ? `${ToCamelCase<Uncapitalize<Head>>}${Capitalize<ToCamelCase<Tail>>}`
-          : Uncapitalize<S>
+        : Uncapitalize<S>
     : never;
 
 /**
