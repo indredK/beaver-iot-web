@@ -595,7 +595,7 @@ export function toCamelCase<T extends string>(str: T): ToCamelCase<T> {
             ? str.toLowerCase()
             : str
                   .replace(/^([A-Z])/, m => m[0].toLowerCase())
-                  .replace(/[_-]([a-z0-9])/g, m => m[1].toUpperCase())
+                  .replace(/[_]([a-z0-9])/g, m => m[1].toUpperCase())
     ) as ToCamelCase<T>;
 }
 
@@ -620,7 +620,6 @@ export function objectToCamelCase<T extends object>(obj: T): ObjectToCamelCase<T
  * const flattenedObj = flattenObject(nestedObj);
  * // flattenedObj 现在是 { 'a.b.c': 1 }
  */
-
 export function flattenObject<T extends Record<string, any>>(obj: T) {
     const result: Record<string, any> = {};
 

@@ -67,7 +67,7 @@ const GeneralContent: React.FC<Props> = ({
                 ),
             },
         ];
-    }, [entities, loading, getIntlText, onUpdateSuccess]);
+    }, [entities, loading, excludeServiceKeys, getIntlText, onUpdateSuccess]);
     const [tabKey, setTabKey] = useRouteTab<GeneralTabKey>(tabs[0].key);
 
     return (
