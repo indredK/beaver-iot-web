@@ -23,6 +23,7 @@ const View = (props: Props) => {
     const [visible, setVisible] = useState(false);
     const [entities, setEntities] = useState([]);
     const ref = useRef<any>();
+    const tempRef = useRef<any>({});
 
     // 调用服务
     const handleCallService = async (data: Record<string, any>) => {
@@ -65,11 +66,12 @@ const View = (props: Props) => {
         if (!error) {
             if (res?.length) {
                 setEntities(
-                    res.map((item: EntityData) => {
+                    res.map((item: EntityData, index: number) => {
+                        tempRef.current[`tempTemp-${index}`] = item.entity_key;
                         return {
                             ...item,
                             id: item.entity_id,
-                            key: item.entity_key,
+                            key: `tempTemp-${index}`,
                             name: item.entity_name,
                             value_attribute: item.entity_value_attribute,
                         };
@@ -107,11 +109,16 @@ const View = (props: Props) => {
 
     const handleSubmit = (data: Record<string, any>) => {
         const newData: any = flattenObject(data);
+        const keys = Object.keys(newData);
+        const resultData: any = {};
+        keys.forEach((key: string) => {
+            resultData[tempRef.current[key]] = newData[key];
+        });
         const entityType = config?.entity?.rawData?.entityType;
         if (entityType === 'PROPERTY') {
-            handleUpdateProperty(newData);
+            handleUpdateProperty(resultData);
         } else if (entityType === 'SERVICE') {
-            handleCallService(newData);
+            handleCallService(resultData);
         }
     };
 
