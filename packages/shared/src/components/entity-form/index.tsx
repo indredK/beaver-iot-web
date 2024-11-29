@@ -40,7 +40,7 @@ const EntityForm = forwardRef((props: EntityFormProps, ref: any) => {
         switch (type) {
             case entityType.enum:
                 componentProps.options = keys?.map((key: string) => {
-                    return { label: key, value: attr?.enum[key] };
+                    return { label: attr?.enum[key], value: key };
                 });
                 break;
             case entityType.int:
