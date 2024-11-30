@@ -99,6 +99,11 @@ export default defineConfig({
         port: WEB_DEV_PORT,
         open: true,
         proxy: {
+            '/aaa': {
+                target: WEB_API_PROXY,
+                changeOrigin: true,
+                rewrite: path => path.replace(/^\/aaa/, ''),
+            },
             '/api': {
                 target: WEB_API_PROXY,
                 changeOrigin: true,
